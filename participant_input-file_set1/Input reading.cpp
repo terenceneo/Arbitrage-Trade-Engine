@@ -20,7 +20,7 @@ int main() {
 //	ifstream reu ( "reu.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
 	vector<string> csvs { "bbg.csv", "ebs.csv", "reu.csv" };
 	 
-	cerr << csvs.size();
+//	cerr << csvs.size() << endl;
 	
 //	int i = 0;
 	
