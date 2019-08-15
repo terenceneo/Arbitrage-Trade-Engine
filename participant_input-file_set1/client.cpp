@@ -4,6 +4,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <chrono>
+#include <unistd.h>
 
 #define PORT 8080
 
@@ -20,7 +22,7 @@ struct row_t {
 list<row_t> bgg_data, ebs_data, reu_data; // all rows from provider
 
 bool data_ready (list<row_t> &data, int time) {
-	return data.front().time >= time;
+	return data.front().time <= time;
 }
 
 string get_next (list<row_t> &data) { //check that data is not empty before calling this function
@@ -100,28 +102,36 @@ int main(int argc, char const *argv[]) {
 	}
 	
 	// sending over data rows
+	
+	// start time
+	auto start = chrono::steady_clock::now();
+	
 	while (!bgg_data.empty() && !ebs_data.empty() && !reu_data.empty()) {
 		string msg;
-		int curr_time = 0;
+		auto end = chrono::steady_clock::now();
+		long long curr_time = chrono::duration_cast<chrono::seconds>(end - start).count();
+//		cerr << curr_time << endl;
 		if (data_ready(bgg_data, curr_time)) {
 			msg = get_next(bgg_data);
 			cerr << msg << endl;
 			send(sock , msg, strlen(msg) , 0 );
 			cerr << "confirmation message\n";
 			
-		} else if(data_ready(ebs_data, curr_time)) {
+		} if(data_ready(ebs_data, curr_time)) {
 			msg = get_next(ebs_data);
 			cerr << msg << endl;
 			send(sock , msg, strlen(msg) , 0 );
 			cerr << "confirmation message\n";
 			
-		} else if (data_ready(reu_data, curr_time)) {
+		} if (data_ready(reu_data, curr_time)) {
 			msg = get_next(reu_data);
 			cerr << msg << endl;
 			send(sock , msg, strlen(msg) , 0 );
 			cerr << "confirmation message\n";
 		}
 	}
+	
+	
 		
 	valread = read(sock , buffer, 1024);
     printf("%s\n",buffer );
