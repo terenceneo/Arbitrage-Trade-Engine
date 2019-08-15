@@ -72,6 +72,9 @@ int main(int argc, char const *argv[]) {
 	csvs.push_back("reu.csv");
 
 //	cerr << csvs.size() << endl;
+
+	long long start time;
+	
 	
 	int i = 0;
 	
@@ -150,15 +153,15 @@ int main(int argc, char const *argv[]) {
 		//listening for and replying to orders
 		int trades = 12;
 		for(int i=0; i<trades; ++i) {
-			valread = read(sock , buffer, 1024); // curr, b/s, provider_rx, price, expiry time (without commas)
+			valread = read(sock , buffer, 1024); // curr, b/s, provider_rx, price, start time >> expiry time (without commas)
 			string input(buffer); //c++ string called input
 			stringstream order(input);
 			
-			long long exptime;
+			long long exptime, starttime;
 			double price;
 			string curr, side, provider_rx;
 			
-			order >> curr >> provider_rx >> side >> price >> exptime;
+			order >> curr >> side >> provider_rx >> price >> starttime >> exptime;
 			
 			// reading current time		
 			auto end = chrono::steady_clock::now();
@@ -167,10 +170,11 @@ int main(int argc, char const *argv[]) {
 			// sending back order confirmation
 
 			if (exptime > curr_time)
-				msg = "Fail"
+				msg = "E"
 			else
-				msg = "Pass"
-			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
+				msg = "F"
+			
+			cout << curr << "," << "2019-05-01" << starttime << "," << price << "," << msg << endl;
 		}
 		
 		
