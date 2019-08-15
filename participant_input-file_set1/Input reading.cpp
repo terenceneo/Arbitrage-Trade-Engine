@@ -38,7 +38,7 @@ int main() {
 			data >> row.ask; data.get();
 			
 			row.time = row.hour * 3600 + row.minute * 60 + row.second;
-			row.all = to_string(row.time) + ", " + to_string(row.bid) + ", " + to_string(row.ask);
+			row.all = csv + ", " + to_string(row.time) + ", " + to_string(row.bid) + ", " + to_string(row.ask);
 			
 	//	    // printing input for debugging
 	//	    cerr << row.time << " x ";
