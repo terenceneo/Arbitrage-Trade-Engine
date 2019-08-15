@@ -106,19 +106,19 @@ int main(int argc, char const *argv[]) {
 		if (data_ready(bgg_data, curr_time)) {
 			msg = get_next(bgg_data);
 			cerr << msg << endl;
-			send(sock , hello2, strlen(hello) , 0 );
+			send(sock , msg, strlen(msg) , 0 );
 			cerr << "confirmation message\n";
 			
 		} else if(data_ready(ebs_data, curr_time)) {
 			msg = get_next(ebs_data);
 			cerr << msg << endl;
-			send(sock , hello2, strlen(hello) , 0 );
+			send(sock , msg, strlen(msg) , 0 );
 			cerr << "confirmation message\n";
 			
 		} else if (data_ready(reu_data, curr_time)) {
 			msg = get_next(reu_data);
 			cerr << msg << endl;
-			send(sock , hello2, strlen(hello) , 0 );
+			send(sock , msg, strlen(msg) , 0 );
 			cerr << "confirmation message\n";
 		}
 	}
