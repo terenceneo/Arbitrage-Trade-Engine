@@ -7,46 +7,53 @@ struct row_t {
 	int hour, minute, second;
 	long long time;
 	double bid, ask;
+	string all; //time, bid, ask stored as a string
 };
 
-vector<row_t> bgg_data;
+vector<row_t> bgg_data, ebs_data, reu_data; // all rows from provider
 
 int main() {
 	row_t row;
 	
-	ifstream bgg ( "bbg.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
-	ifstream ebs ( "ebs.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
-	ifstream reu ( "reu.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
-	string curr;
-	int i = 0;
-	int hour, minute, second;
-	double bid, ask;
-	while ( bgg.good() ){		
-		bgg >> row.hour; bgg.get();
-		bgg >> row.minute; bgg.get();
-		bgg >> row.second; bgg.get();
-	    
-	    getline ( bgg, row.curr, ',' );
-	    
-		bgg >> row.bid; bgg.get();
-		bgg >> row.ask; bgg.get();
-		
-		row.time = row.hour * 3600 + row.minute * 60 + row.second;
-		
-//		row = make_tuple(time, curr, bid, ask);
-	    
-	    cout << row.time << " x ";
-	    cout << row.curr << " x ";
-	    cout << row.bid << " x ";
-	    cout << row.ask << " x ";
-
-		cout << " : " << i << endl;
-//		cout<< row << " : " << i << endl;
-		i++;
-		
-		bgg_data.push_back(row);
-//	     cout << string( value, 0, value.length() ); // display value removing the first and the last character from it
-	}
+//	ifstream bgg ( "bbg.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+//	ifstream ebs ( "ebs.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+//	ifstream reu ( "reu.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+	vector<string> csvs { "bbg.csv", "ebs.csv", "reu.csv" };
+	 
+	cerr << csvs.size();
 	
-	cout << bgg_data.size();
+//	int i = 0;
+	
+	for (string csv : csvs) {
+		ifstream data (csv);
+		while ( data.good() ){		
+			//taking in row data
+			data >> row.hour; data.get();
+			data >> row.minute; data.get();
+			data >> row.second; data.get();
+		    
+		    getline ( data, row.curr, ',' );
+		    
+			data >> row.bid; data.get();
+			data >> row.ask; data.get();
+			
+			row.time = row.hour * 3600 + row.minute * 60 + row.second;
+			row.all = to_string(row.time) + ", " + to_string(row.bid) + ", " + to_string(row.ask);
+			
+	//	    // printing input for debugging
+	//	    cerr << row.time << " x ";
+	//	    cerr << row.curr << " x ";
+	//	    cerr << row.bid << " x ";
+	//	    cerr << row.ask << " x ";
+	//
+	//		cerr << " : " << i << endl;
+	//		i++;
+			
+			cerr << row.all << endl;
+			
+			bgg_data.push_back(row); // can be thrown away
+		}
+		
+	//	cerr << bgg_data.size();
+	}
 }
