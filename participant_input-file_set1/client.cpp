@@ -1,4 +1,5 @@
 //#include <bits/stdc++.h>
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -73,7 +74,7 @@ int main(int argc, char const *argv[]) {
 
 //	cerr << csvs.size() << endl;
 
-	long long start time;
+	long long starttime;
 	
 	
 	int i = 0;
@@ -95,7 +96,6 @@ int main(int argc, char const *argv[]) {
 			string provider = csv.substr(0,3);
 			row.time = row.hour * 3600 + row.minute * 60 + row.second;
 			row.all = provider + " " + to_string(row.time) + " " + to_string(row.bid) + " " + to_string(row.ask);
-			row.id
 			
 	//	    // printing input for debugging
 	//	    cerr << row.time << " x ";
@@ -155,6 +155,7 @@ int main(int argc, char const *argv[]) {
 		for(int i=0; i<trades; ++i) {
 			valread = read(sock , buffer, 1024); // curr, b/s, provider_rx, price, start time >> expiry time (without commas)
 			string input(buffer); //c++ string called input
+			string input = "aaa";
 			stringstream order(input);
 			
 			long long exptime, starttime;
@@ -170,9 +171,9 @@ int main(int argc, char const *argv[]) {
 			// sending back order confirmation
 
 			if (exptime > curr_time)
-				msg = "E"
+				msg = "E";
 			else
-				msg = "F"
+				msg = "F";
 			
 			cout << curr << "," << "2019-05-01" << starttime << "," << price << "," << msg << endl;
 		}
