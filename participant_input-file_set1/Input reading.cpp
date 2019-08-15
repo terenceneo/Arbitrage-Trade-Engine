@@ -1,4 +1,9 @@
 #include <bits/stdc++.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <string.h>
 
 #define PORT 8080
 
@@ -24,7 +29,33 @@ string get_next (list<row_t> &data) { //check that data is not empty before call
 	return msg;
 }
 
-int main() {
+int main(int argc, char const *argv[]) {
+	//Setting up client
+	int sock = 0, valread;
+    struct sockaddr_in serv_addr;
+    
+    char buffer[1024] = {0};
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+    
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+    
+    // Convert IPv4 and IPv6 addresses from text to binary form
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) {
+        printf("\nInvalid address/ Address not supported \n");
+        return -1;
+    }
+    
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        printf("\nConnection Failed \n");
+        return -1;
+    }
+	
+	
+	// Processing data
 	row_t row;
 
 	vector<string> csvs { "bbg.csv", "ebs.csv", "reu.csv" };
@@ -75,13 +106,24 @@ int main() {
 		if (data_ready(bgg_data, curr_time)) {
 			msg = get_next(bgg_data);
 			cerr << msg << endl;
+			send(sock , hello2, strlen(hello) , 0 );
+			cerr << "confirmation message\n";
+			
 		} else if(data_ready(ebs_data, curr_time)) {
 			msg = get_next(ebs_data);
 			cerr << msg << endl;
+			send(sock , hello2, strlen(hello) , 0 );
+			cerr << "confirmation message\n";
+			
 		} else if (data_ready(reu_data, curr_time)) {
 			msg = get_next(reu_data);
 			cerr << msg << endl;
+			send(sock , hello2, strlen(hello) , 0 );
+			cerr << "confirmation message\n";
 		}
 	}
 		
+	valread = read(sock , buffer, 1024);
+    printf("%s\n",buffer );
+    return 0;
 }
