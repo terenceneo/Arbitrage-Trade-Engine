@@ -22,6 +22,7 @@ struct row_t {
 	long long time;
 	double bid, ask;
 	string all; //time, bid, ask stored as a string
+	int id;
 };
 
 list<row_t> bgg_data, ebs_data, reu_data; // all rows from provider
@@ -65,11 +66,14 @@ int main(int argc, char const *argv[]) {
 	// Processing data
 	row_t row;
 
-	vector<string> csvs { "bbg.csv", "ebs.csv", "reu.csv" };
+	vector<string> csvs;
+	csvs.push_back("bbg.csv");
+	csvs.push_back("ebs.csv");
+	csvs.push_back("reu.csv");
 
 //	cerr << csvs.size() << endl;
 	
-//	int i = 0;
+	int i = 0;
 	
 	for (string csv : csvs) {
 		ifstream data (csv); // declare file stream
@@ -88,6 +92,7 @@ int main(int argc, char const *argv[]) {
 			string provider = csv.substr(0,3);
 			row.time = row.hour * 3600 + row.minute * 60 + row.second;
 			row.all = provider + " " + to_string(row.time) + " " + to_string(row.bid) + " " + to_string(row.ask);
+			row.id
 			
 	//	    // printing input for debugging
 	//	    cerr << row.time << " x ";
@@ -111,29 +116,64 @@ int main(int argc, char const *argv[]) {
 	// start time
 	auto start = chrono::steady_clock::now();
 	
-	while (!bgg_data.empty() && !ebs_data.empty() && !reu_data.empty()) {
-		string msg;
+	while (!bgg_data.empty() || !ebs_data.empty() || !reu_data.empty()) {
+		
+		// reading current time		
 		auto end = chrono::steady_clock::now();
 		long long curr_time = chrono::duration_cast<chrono::seconds>(end - start).count();
+		
+		//sending data
+		string msg;
+//		string fallback = provider + " " + to_string(curr_time) + " " + to_string(0) + " " + to_string(1e9); // if blank line
 //		cerr << curr_time << endl;
 		if (data_ready(bgg_data, curr_time)) {
 			msg = get_next(bgg_data);
-			cerr << msg << endl;
 			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
-			cerr << "confirmation message\n";
+			cerr << msg << endl;
+//		} else {
+//			msg = fallback;
+//			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
+//		}
 			
-		} if(data_ready(ebs_data, curr_time)) {
+		if(data_ready(ebs_data, curr_time)) {
 			msg = get_next(ebs_data);
-			cerr << msg << endl;
 			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
-			cerr << "confirmation message\n";
+			cerr << msg << endl;
 			
-		} if (data_ready(reu_data, curr_time)) {
+		if (data_ready(reu_data, curr_time)) {
 			msg = get_next(reu_data);
-			cerr << msg << endl;
 			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
-			cerr << "confirmation message\n";
+			cerr << msg << endl;
 		}
+		
+		
+		//listening for and replying to orders
+		int trades = 12;
+		for(int i=0; i<trades; ++i) {
+			valread = read(sock , buffer, 1024); // curr, b/s, provider_rx, price, expiry time (without commas)
+			string input(buffer); //c++ string called input
+			stringstream order(input);
+			
+			long long exptime;
+			double price;
+			string curr, side, provider_rx;
+			
+			order >> curr >> provider_rx >> side >> price >> exptime;
+			
+			// reading current time		
+			auto end = chrono::steady_clock::now();
+			long long curr_time = chrono::duration_cast<chrono::seconds>(end - start).count();
+			
+			// sending back order confirmation
+
+			if (exptime > curr_time)
+				msg = "Fail"
+			else
+				msg = "Pass"
+			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
+		}
+		
+		
 	}
 	
 	
