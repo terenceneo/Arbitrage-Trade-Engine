@@ -73,9 +73,6 @@ int main(int argc, char const *argv[]) {
 	csvs.push_back("reu.csv");
 
 //	cerr << csvs.size() << endl;
-
-	long long starttime;
-	
 	
 	int i = 0;
 	
@@ -133,6 +130,7 @@ int main(int argc, char const *argv[]) {
 			msg = get_next(bgg_data);
 			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
 			cerr << msg << endl;
+		}
 //		} else {
 //			msg = fallback;
 //			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
@@ -142,6 +140,7 @@ int main(int argc, char const *argv[]) {
 			msg = get_next(ebs_data);
 			send(sock , msg.c_str(), strlen(msg.c_str()) , 0 );
 			cerr << msg << endl;
+		}
 			
 		if (data_ready(reu_data, curr_time)) {
 			msg = get_next(reu_data);
@@ -153,9 +152,8 @@ int main(int argc, char const *argv[]) {
 		//listening for and replying to orders
 		int trades = 12;
 		for(int i=0; i<trades; ++i) {
-			valread = read(sock , buffer, 1024); // curr, b/s, provider_rx, price, start time >> expiry time (without commas)
+			valread = read(sock , buffer, 1024); // curr, b/s, provider_rx, price, start time, expiry time (without commas)
 			string input(buffer); //c++ string called input
-			string input = "aaa";
 			stringstream order(input);
 			
 			long long exptime, starttime;
